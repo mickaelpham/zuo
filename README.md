@@ -4,9 +4,9 @@ Command-line interface to Zuora
 
 ## Why the Name?
 
-Because it's z-**u**-ora, not z*ou*ra people!
+Because it's Z-**u**-ora, not Z*ou*ra people!
 
-It's the same as Zendesk, not Zen*D*esk, no capital “d” my friend.
+(It's the same as Zen**d**esk, not Zen*D*esk, no capital “d” my friend.)
 
 ## Usage
 
@@ -19,5 +19,5 @@ zuo query account zuora-account-id
 Execute a ZOQL query
 
 ```sh
-zuo exec "SELECT Name FROM Product"
+zuo exec "SELECT Name FROM Product WHERE Status = 'Active'"
 ```
