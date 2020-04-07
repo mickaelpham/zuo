@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	zuo "github.com/mickael/zuo/internal"
 	"github.com/urfave/cli/v2"
 )
 
@@ -30,9 +31,11 @@ func main() {
 				Name:  "exec",
 				Usage: "Executes a ZOQL query",
 				Action: func(c *cli.Context) error {
+					token := zuo.NewToken()
 					fmt.Printf(
-						"executing %q\n",
+						"executing %q with %v\n",
 						c.Args().Get(0),
+						token,
 					)
 					return nil
 				},
