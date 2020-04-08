@@ -47,7 +47,8 @@ func load() (*AccessToken, bool) {
 
 	dat, err := ioutil.ReadFile(homeDir + TOKENS_FILE)
 	if err != nil {
-		log.Print(err)
+		log.Println("no stored access token found " +
+			"(I will fetch one for ya, don't worry)")
 		return nil, false
 	}
 
@@ -55,6 +56,12 @@ func load() (*AccessToken, bool) {
 	err = json.Unmarshal(dat, &token)
 	if err != nil {
 		log.Print(err)
+		return nil, false
+	}
+
+	if time.Now().After(token.Expiry) {
+		log.Print("found stored token, but it's expired " +
+			"(no big deal, I will fetch a new one!)")
 		return nil, false
 	}
 
