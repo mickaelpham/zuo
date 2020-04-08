@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	APP_PATH    string = "/.zuo/"
-	TOKENS_FILE string = APP_PATH + "access-tokens.json"
+	APP_PATH   string = "/.zuo/"
+	TOKEN_FILE string = APP_PATH + "access-token.json"
 )
 
 type AccessToken struct {
@@ -45,7 +45,7 @@ func load() (*AccessToken, bool) {
 		return nil, false
 	}
 
-	dat, err := ioutil.ReadFile(homeDir + TOKENS_FILE)
+	dat, err := ioutil.ReadFile(homeDir + TOKEN_FILE)
 	if err != nil {
 		log.Println("no stored access token found " +
 			"(I will fetch one for ya, don't worry)")
@@ -87,7 +87,7 @@ func (t *AccessToken) store() {
 		log.Fatal(err)
 	}
 
-	err = ioutil.WriteFile(homeDir+TOKENS_FILE, message, 0644)
+	err = ioutil.WriteFile(homeDir+TOKEN_FILE, message, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
