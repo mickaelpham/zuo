@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/mickael/zuo/internal/conf"
@@ -33,24 +31,34 @@ type tokenResponse struct {
 }
 
 func Token() *AccessToken {
-	if fromEnv, valid := load(); valid {
-		return fromEnv
+	if fromFile, valid := load(); valid {
+		return fromFile
 	}
 
 	return fetch()
 }
 
 func load() (*AccessToken, bool) {
-	value, found := syscall.Getenv("ZUO_ACCESS_TOKEN_VALUE")
-	expiryValue, envExpiry := syscall.Getenv("ZUO_ACCESS_TOKEN_EXPIRES_AT")
-	expiresAt, err := strconv.ParseInt(expiryValue, 10, 64)
-	expiry := time.Unix(expiresAt, 0)
-
-	if !found || !envExpiry || err != nil || time.Now().After(expiry) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Print(err)
 		return nil, false
 	}
 
-	return &AccessToken{Val: value, Expiry: expiry}, true
+	dat, err := ioutil.ReadFile(homeDir + TOKENS_FILE)
+	if err != nil {
+		log.Print(err)
+		return nil, false
+	}
+
+	var token AccessToken
+	err = json.Unmarshal(dat, &token)
+	if err != nil {
+		log.Print(err)
+		return nil, false
+	}
+
+	return &token, true
 }
 
 func (t *AccessToken) store() {
@@ -67,7 +75,11 @@ func (t *AccessToken) store() {
 		}
 	}
 
-	message := []byte(t.Val)
+	message, err := json.Marshal(t)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = ioutil.WriteFile(homeDir+TOKENS_FILE, message, 0644)
 	if err != nil {
 		log.Fatal(err)
