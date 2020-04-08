@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/mickael/zuo/internal/bearer"
 	"github.com/urfave/cli/v2"
 )
 
@@ -30,10 +31,20 @@ func main() {
 				Name:  "exec",
 				Usage: "Executes a ZOQL query",
 				Action: func(c *cli.Context) error {
+					token := bearer.Token()
 					fmt.Printf(
-						"executing %q\n",
+						"executing %q with %v\n",
 						c.Args().Get(0),
+						token,
 					)
+					return nil
+				},
+			},
+			{
+				Name:  "login",
+				Usage: "Generates an access token from Zuora",
+				Action: func(c *cli.Context) error {
+					fmt.Println("login...")
 					return nil
 				},
 			},
