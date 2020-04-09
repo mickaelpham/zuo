@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mickael/zuo/internal/command"
+	"github.com/mickael/zuo/internal/print"
 	"github.com/urfave/cli/v2"
 )
 
@@ -32,8 +33,12 @@ func main() {
 				Usage: "Executes a ZOQL query",
 				Action: func(c *cli.Context) error {
 					queryString := c.Args().Get(0)
-					response := command.Query(queryString)
-					fmt.Printf("%+v\n", response)
+					resp := command.Query(queryString)
+					fmt.Printf(
+						"Found %d records\n",
+						resp.Size,
+					)
+					print.Table(resp.Records)
 					return nil
 				},
 			},
