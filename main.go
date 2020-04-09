@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/mickael/zuo/internal/bearer"
+	"github.com/mickael/zuo/internal/command"
 	"github.com/urfave/cli/v2"
 )
 
@@ -31,12 +31,9 @@ func main() {
 				Name:  "exec",
 				Usage: "Executes a ZOQL query",
 				Action: func(c *cli.Context) error {
-					token := bearer.Token()
-					fmt.Printf(
-						"executing %q with %v\n",
-						c.Args().Get(0),
-						token,
-					)
+					queryString := c.Args().Get(0)
+					response := command.Query(queryString)
+					fmt.Printf("%+v\n", response)
 					return nil
 				},
 			},
