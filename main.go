@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/mickael/zuo/internal/bearer"
+	"github.com/mickael/zuo/internal/command"
+	"github.com/mickael/zuo/internal/print"
 	"github.com/urfave/cli/v2"
 )
 
@@ -30,13 +32,34 @@ func main() {
 			{
 				Name:  "exec",
 				Usage: "Executes a ZOQL query",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "json",
+						Usage: "Raw JSON from Zuora",
+					},
+				},
 				Action: func(c *cli.Context) error {
-					token := bearer.Token()
-					fmt.Printf(
-						"executing %q with %v\n",
-						c.Args().Get(0),
-						token,
-					)
+					queryString := c.Args().Get(0)
+					if len(queryString) == 0 {
+						fmt.Println("query is required")
+						return nil
+					}
+
+					resp := command.Query(queryString)
+
+					if c.Bool("json") {
+						json, err := json.Marshal(resp)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Println(string(json))
+					} else {
+						fmt.Printf(
+							"Found %d record(s)\n",
+							resp.Size,
+						)
+						print.Table(resp.Records)
+					}
 					return nil
 				},
 			},
