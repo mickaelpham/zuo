@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -31,14 +32,34 @@ func main() {
 			{
 				Name:  "exec",
 				Usage: "Executes a ZOQL query",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "json",
+						Usage: "Raw JSON from Zuora",
+					},
+				},
 				Action: func(c *cli.Context) error {
 					queryString := c.Args().Get(0)
+					if len(queryString) == 0 {
+						fmt.Println("query is required")
+						return nil
+					}
+
 					resp := command.Query(queryString)
-					fmt.Printf(
-						"Found %d records\n",
-						resp.Size,
-					)
-					print.Table(resp.Records)
+
+					if c.Bool("json") {
+						json, err := json.Marshal(resp)
+						if err != nil {
+							log.Fatal(err)
+						}
+						fmt.Println(string(json))
+					} else {
+						fmt.Printf(
+							"Found %d record(s)\n",
+							resp.Size,
+						)
+						print.Table(resp.Records)
+					}
 					return nil
 				},
 			},
