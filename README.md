@@ -4,16 +4,41 @@ Command-line interface to Zuora
 
 ## Usage
 
-Query a Zuora object knowing its ID
+### Query a Zuora object knowing its ID
+
+_This feature is not (yet) implemented._
 
 ```sh
 zuo query account zuora-account-id
 ```
 
-Execute a ZOQL query
+### Execute a ZOQL query
+
+Standard usage will print out data in a table format.
 
 ```sh
 zuo exec "SELECT Name FROM Product WHERE Status = 'Active'"
+```
+
+ZOQL query string is case-insensitive.
+
+```sh
+zuo exec "select name from product where status='active'"
+```
+
+If you don't use any `WHERE` clause with a `String` or `Date` argument, you can
+use single quotes.
+
+```sh
+zuo exec 'select name from product'
+```
+
+You can use the `--json` flag to print the raw JSON response from Zuora. It's
+useful when piping the output to a command-line JSON processor such as
+[`jq`](https://stedolan.github.io/jq/).
+
+```sh
+zuo exec --json "SELECT Id FROM Account WHERE Balance > 0" | jq '.size'
 ```
 
 ## Setup
